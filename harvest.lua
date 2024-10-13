@@ -58,7 +58,7 @@ local function checkDistanceAndPressKey()
                 game:GetService("VirtualInputManager"):SendKeyEvent(true, keyToPress, false, game)
                 game:GetService("VirtualInputManager"):SendKeyEvent(false, keyToPress, false, game)
                 print("Pressed F near stage_3 object")
-                wait(0.5)  -- Small delay to avoid spamming
+                wait(1)  -- Small delay to avoid spamming
             end
         end
     end
