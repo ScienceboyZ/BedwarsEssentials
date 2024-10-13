@@ -1,5 +1,5 @@
 -- Settings for pressing the F key near stage_3 objects
-local distanceThreshold = 50  -- The distance within which the "F" key will be pressed
+local distanceThreshold = 5  -- The distance within which the "F" key will be pressed
 local keyToPress = Enum.KeyCode.F  -- The key to press (F key)
 
 -- Services
