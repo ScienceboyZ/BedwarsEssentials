@@ -13,8 +13,8 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local labeledObjects = {}
 local lastFPressedTime = 0  -- To debounce the F key press
 
--- List of object names to track
-local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root", "drone"}
+-- List of object names to track (specifically looking for "Root" as a child of "Bee")
+local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root"}
 
 -- Function to create ESP for a given object
 local function createESPForObject(object, labelName)
@@ -26,7 +26,7 @@ local function createESPForObject(object, labelName)
     espLabel.AlwaysOnTop = true
     espLabel.Parent = object
 
-    -- Check if the object is "stage_3" or "Root" for custom display
+    -- Custom display for "stage_3" or for "Root" if its parent is "Bee"
     if labelName == "stage_3" then
         local greenCircle = Instance.new("Frame", espLabel)
         greenCircle.Size = UDim2.new(2, 0, 2, 0)  -- Increase size for visibility
@@ -37,8 +37,9 @@ local function createESPForObject(object, labelName)
 
         local circleCorner = Instance.new("UICorner", greenCircle)  -- Make the frame circular
         circleCorner.CornerRadius = UDim.new(1, 0)
-        
-    elseif labelName == "Root" then
+
+    elseif labelName == "Root" and object.Parent and object.Parent.Name == "Bee" then
+        -- Only show the ESP for "Root" if its parent is "Bee"
         local yellowCircle = Instance.new("Frame", espLabel)
         yellowCircle.Size = UDim2.new(2, 0, 2, 0)  -- Increase size for visibility
         yellowCircle.BackgroundColor3 = Color3.new(1, 1, 0)  -- Yellow color
@@ -90,7 +91,12 @@ local function checkForNewObjects()
         if obj:IsA("BasePart") then
             for _, targetName in ipairs(targetObjects) do
                 if string.find(obj.Name:lower(), targetName:lower()) then
-                    createESPForObject(obj, targetName)  -- Label it with the object name
+                    -- Only create ESP for "Root" if its parent is "Bee"
+                    if obj.Name == "Root" and obj.Parent and obj.Parent.Name == "Bee" then
+                        createESPForObject(obj, "Root")
+                    elseif obj.Name ~= "Root" then
+                        createESPForObject(obj, targetName)  -- Label it with the object name
+                    end
                 end
             end
         end
