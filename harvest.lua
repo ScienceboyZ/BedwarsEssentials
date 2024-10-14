@@ -11,7 +11,7 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 local labeledObjects = {}
 
 -- List of object names to track
-local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon"}
+local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root"}
 
 -- Function to create ESP for a given object
 local function createESPForObject(object, labelName)
@@ -23,7 +23,7 @@ local function createESPForObject(object, labelName)
     espLabel.AlwaysOnTop = true
     espLabel.Parent = object
 
-    -- Check if the object is "stage_3" for custom display
+    -- Check if the object is "stage_3" or "Root" for custom display
     if labelName == "stage_3" then
         local greenCircle = Instance.new("Frame", espLabel)
         greenCircle.Size = UDim2.new(2, 0, 2, 0)  -- Increase size for visibility
@@ -34,6 +34,18 @@ local function createESPForObject(object, labelName)
 
         local circleCorner = Instance.new("UICorner", greenCircle)  -- Make the frame circular
         circleCorner.CornerRadius = UDim.new(1, 0)
+        
+    elseif labelName == "Root" then
+        local yellowCircle = Instance.new("Frame", espLabel)
+        yellowCircle.Size = UDim2.new(2, 0, 2, 0)  -- Increase size for visibility
+        yellowCircle.BackgroundColor3 = Color3.new(1, 1, 0)  -- Yellow color
+        yellowCircle.BackgroundTransparency = 0.3  -- Slight transparency
+        yellowCircle.AnchorPoint = Vector2.new(0.5, 0.5)  -- Center the circle
+        yellowCircle.Position = UDim2.new(0.5, 0, 0.5, 0)  -- Place it in the center
+
+        local circleCorner = Instance.new("UICorner", yellowCircle)  -- Make the frame circular
+        circleCorner.CornerRadius = UDim.new(1, 0)
+        
     else
         -- Standard ESP text label for other objects
         local label = Instance.new("TextLabel", espLabel)
