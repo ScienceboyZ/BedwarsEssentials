@@ -14,7 +14,7 @@ local labeledObjects = {}
 local lastFPressedTime = 0  -- To debounce the F key press
 
 -- List of object names to track
-local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root"}
+local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root", "drone"}
 
 -- Function to create ESP for a given object
 local function createESPForObject(object, labelName)
