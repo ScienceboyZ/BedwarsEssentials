@@ -1,6 +1,8 @@
 -- Settings for pressing the F key near stage_3 objects
 local distanceThreshold = 5  -- The distance within which the "F" key will be pressed
 local keyToPress = Enum.KeyCode.F  -- The key to press (F key)
+local checkInterval = 2  -- How often to check objects (in seconds)
+local debounceTime = 1  -- Time to wait between pressing F
 
 -- Services
 local player = game.Players.LocalPlayer
@@ -9,6 +11,7 @@ local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
 -- Create a table to keep track of objects we've already labeled
 local labeledObjects = {}
+local lastFPressedTime = 0  -- To debounce the F key press
 
 -- List of object names to track
 local targetObjects = {"carrot", "iron", "diamond", "emerald", "bee", "egg", "pumpkin", "stage_3", "watermelon", "Root"}
@@ -62,6 +65,10 @@ end
 
 -- Function to check the distance and press "F" if close enough
 local function checkDistanceAndPressKey()
+    -- Only press the "F" key if debounce time has passed
+    local currentTime = tick()
+    if currentTime - lastFPressedTime < debounceTime then return end
+
     for _, obj in pairs(game.Workspace:GetDescendants()) do
         if obj:IsA("BasePart") and obj.Name == "stage_3" then
             local distance = (obj.Position - humanoidRootPart.Position).Magnitude
@@ -70,6 +77,7 @@ local function checkDistanceAndPressKey()
                 game:GetService("VirtualInputManager"):SendKeyEvent(true, keyToPress, false, game)
                 game:GetService("VirtualInputManager"):SendKeyEvent(false, keyToPress, false, game)
                 print("Pressed F near stage_3 object")
+                lastFPressedTime = currentTime  -- Update the time F was pressed
                 wait(2)  -- Small delay to avoid spamming
             end
         end
@@ -81,7 +89,7 @@ local function checkForNewObjects()
     for _, obj in pairs(game.Workspace:GetDescendants()) do
         if obj:IsA("BasePart") then
             for _, targetName in ipairs(targetObjects) do
-                if string.find(obj.Name:lower(), targetName) then
+                if string.find(obj.Name:lower(), targetName:lower()) then
                     createESPForObject(obj, targetName)  -- Label it with the object name
                 end
             end
@@ -93,5 +101,5 @@ end
 while true do
     checkForNewObjects()  -- Check the workspace for new target objects
     checkDistanceAndPressKey()  -- Check the distance for pressing F near stage_3 objects
-    wait(1)  -- Wait for 1 second before checking again to avoid performance issues
+    wait(checkInterval)  -- Wait to avoid performance issues
 end
