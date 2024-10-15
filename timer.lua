@@ -6,6 +6,7 @@ local localPlayer = players.LocalPlayer
 
 -- Create a table to keep track of the stage_2 objects and their active timers
 local stage2Timers = {}
+local running = true  -- This will control whether the script is running or stopped
 
 -- Create the UI elements
 local screenGui
@@ -51,6 +52,26 @@ local function restartScript()
     timerList.Parent = timerFrame  -- Reattach the layout after clearing the frame
 end
 
+-- Function to shut down the script and remove all timers
+local function shutdownScript()
+    running = false  -- Stop the script from further execution
+
+    -- Remove all UI timers
+    for object, _ in pairs(stage2Timers) do
+        stage2Timers[object] = nil
+    end
+
+    -- Clear the frame and remove the ScreenGui
+    if timerFrame then
+        timerFrame:ClearAllChildren()
+    end
+    if screenGui then
+        screenGui:Destroy()
+    end
+
+    print("Script has been shut down.")
+end
+
 -- Function to toggle the UI visibility with Right Alt key
 local uiVisible = true
 local function toggleUI()
@@ -58,7 +79,7 @@ local function toggleUI()
     timerFrame.Visible = uiVisible
 end
 
--- Detect holding the Right Alt key for 3 seconds to restart the script
+-- Detect holding the Right Alt key for 3 seconds to shut down the script
 local rightAltHeld = false
 local holdTime = 0
 
@@ -79,7 +100,7 @@ runService.Heartbeat:Connect(function(dt)
     if rightAltHeld then
         holdTime = holdTime + dt
         if holdTime >= 3 then
-            restartScript()  -- Restart the script if held for 3 seconds
+            shutdownScript()  -- Shut down the script if held for 3 seconds
             rightAltHeld = false
         end
     end
@@ -87,6 +108,9 @@ end)
 
 -- Function to create and update the timer on a specific stage_2 object
 local function createTimerESP(object, duration)
+    -- If the script is not running, stop creating timers
+    if not running then return end
+
     -- If the timer for this stage_2 object is already active, skip it
     if stage2Timers[object] then return end
 
@@ -109,6 +133,7 @@ local function createTimerESP(object, duration)
 
     -- Create a text label in the UI to display the timer
     local uiTimerLabel = Instance.new("TextLabel")
+    uiTimerLabel.Name = object.Name .. "_" .. object:GetDebugId()  -- Ensure unique label names
     uiTimerLabel.Size = UDim2.new(1, 0, 0, 20)
     uiTimerLabel.BackgroundTransparency = 1
     uiTimerLabel.TextColor3 = Color3.new(1, 1, 1)  -- White text in UI
@@ -122,6 +147,8 @@ local function createTimerESP(object, duration)
 
     -- Function to update the timer
     local function updateTimer(dt)
+        if not running then return end  -- Stop updating if the script has shut down
+
         remainingTime = remainingTime - dt  -- Decrease remaining time by delta time
         if remainingTime <= 0 then
             espLabel:Destroy()  -- Remove the ESP when the timer reaches 0
@@ -158,7 +185,7 @@ end
 
 -- Main loop to continuously check for new stage_2 objects
 local function mainLoop()
-    while true do
+    while running do
         checkForStage2Objects()
         wait(1)  -- Wait 1 second before checking again to avoid performance issues
     end
