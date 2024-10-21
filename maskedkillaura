@@ -71,6 +71,15 @@ local function toggleClicking(input)
     end
 end
 
+-- Function to reinitialize on respawn
+local function onCharacterAdded(newCharacter)
+    character = newCharacter
+    humanoidRootPart = newCharacter:WaitForChild("HumanoidRootPart") -- Update the humanoidRootPart reference
+end
+
+-- Bind the character respawn event
+player.CharacterAdded:Connect(onCharacterAdded)
+
 -- Bind the keypress event
 UserInputService.InputBegan:Connect(toggleClicking)
 
